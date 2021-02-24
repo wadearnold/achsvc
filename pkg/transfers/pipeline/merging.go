@@ -51,13 +51,15 @@ func NewMerging(logger log.Logger, cfg config.Pipeline) (XferMerging, error) {
 
 	return &filesystemMerging{
 		baseDir: dir,
+		cfg:     cfg.Merging,
 		logger:  logger,
 	}, nil
 }
 
 type filesystemMerging struct {
-	logger  log.Logger
 	baseDir string
+	cfg     *config.Merging
+	logger  log.Logger
 }
 
 func (m *filesystemMerging) HandleXfer(xfer Xfer) error {
@@ -213,9 +215,20 @@ func (m *filesystemMerging) WithEachMerged(f func(*ach.File) error) (*processedT
 
 	// Write each file to our storage
 	for i := range files {
+		// Optionally Flatten Batches
+		if m.cfg != nil && m.cfg.FlattenBatches != nil {
+			fmt.Printf("attempting flatten: %#v\n", m.cfg)
+			if file, err := files[i].FlattenBatches(); err != nil {
+				el.Add(err)
+			} else {
+				files[i] = file
+			}
+		}
+		// Write our file to the mergable directory
 		if err := writeFile(dir, files[i]); err != nil {
 			el.Add(fmt.Errorf("problem writing merged file: %v", err))
 		}
+		// Call our closure with the final file
 		if err := f(files[i]); err != nil {
 			el.Add(fmt.Errorf("problem from callback: %v", err))
 		}

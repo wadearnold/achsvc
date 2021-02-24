@@ -61,6 +61,8 @@ validation:
       accountID: "replace-me"
       organization: "replace-me"
 pipeline:
+  merging:
+    flattenBatches: {}
   output:
     format: "nacha"
   stream:

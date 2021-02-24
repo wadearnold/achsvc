@@ -224,6 +224,7 @@ pipeline:
     [ format: <string> | default = "nacha" ]
   merging:
     [ directory: <filename> ]
+    [ flattenBatches: <object> ]
   auditTrail:
     # BucketURI is a URI used to connect to a remote storage layer for saving
     # ACH files uploaded to the ODFI as part of records retention.

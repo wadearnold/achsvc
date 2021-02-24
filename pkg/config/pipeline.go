@@ -93,12 +93,15 @@ func (cfg *Output) Validate() error {
 }
 
 type Merging struct {
-	Directory string
+	Directory      string
+	FlattenBatches *FlattenBatches
 }
 
 func (cfg *Merging) Validate() error {
 	return nil
 }
+
+type FlattenBatches struct{}
 
 type AuditTrail struct {
 	BucketURI string
